@@ -7,14 +7,18 @@ import json
 from datetime import datetime
 import io
 import logging
+import uuid
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__, static_url_path='')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 設定最大上傳檔案大小為 16MB
 CORS(app, resources={
-    r"/*": {
-        "origins": "*",  # 允許所有來源
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"],
+    r"/api/*": {
+        "origins": [
+            "http://localhost:5000",
+            "https://nickleo9.github.io",
+            "https://aicard-frontend.onrender.com"
+        ]
     }
 })
 
@@ -33,8 +37,10 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(MUSIC_FOLDER, exist_ok=True)
 
 # 設定允許的文件類型
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp3', 'wav'}
 ALLOWED_MUSIC_EXTENSIONS = {'mp3', 'wav'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
@@ -51,11 +57,7 @@ def serve_card():
 def save_card():
     try:
         data = request.get_json()
-        if not data:
-            app.logger.error('無效的請求數據')
-            return jsonify({'success': False, 'message': '無效的請求數據'}), 400
-
-        card_id = str(datetime.now().timestamp())
+        card_id = str(uuid.uuid4())
         
         # 保存卡片數據
         card_data_path = os.path.join(UPLOAD_FOLDER, f'card_{card_id}.json')
@@ -77,8 +79,8 @@ def save_card():
             'message': f'保存失敗: {str(e)}'
         }), 500
 
-@app.route('/api/load_card/<card_id>')
-def load_card(card_id):
+@app.route('/api/cards/<card_id>', methods=['GET'])
+def get_card(card_id):
     try:
         card_data_path = os.path.join(UPLOAD_FOLDER, f'card_{card_id}.json')
         if not os.path.exists(card_data_path):
@@ -91,10 +93,7 @@ def load_card(card_id):
         with open(card_data_path, 'r', encoding='utf-8') as f:
             card_data = json.load(f)
             
-        return jsonify({
-            'success': True,
-            'data': card_data
-        })
+        return jsonify(card_data)
     except Exception as e:
         app.logger.error(f'讀取卡片時發生錯誤: {str(e)}')
         return jsonify({
@@ -122,7 +121,7 @@ def upload_photo():
             
         if file and allowed_file(file.filename, ALLOWED_EXTENSIONS):
             # 生成唯一文件名
-            filename = f"{datetime.now().timestamp()}_{file.filename}"
+            filename = f"{datetime.now().timestamp()}_{secure_filename(file.filename)}"
             filepath = os.path.join(UPLOAD_FOLDER, filename)
             
             # 打開並處理圖片
@@ -197,7 +196,7 @@ def upload_music():
             }), 400
             
         if file and allowed_file(file.filename, ALLOWED_MUSIC_EXTENSIONS):
-            filename = f"{datetime.now().timestamp()}_{file.filename}"
+            filename = f"{uuid.uuid4()}_{secure_filename(file.filename)}"
             filepath = os.path.join(MUSIC_FOLDER, filename)
             file.save(filepath)
             
