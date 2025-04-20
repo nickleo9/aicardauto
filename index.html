@@ -781,14 +781,17 @@
         <p class="music-title">背景音樂</p>
     </div>
     <audio id="bgMusic" loop>
-        <source src="uploads/background.mp3" type="audio/mp3">
+        <source src="/music/background.mp3" type="audio/mp3">
     </audio>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 設定 API 基礎網址
             const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
                 ? 'http://localhost:5000'
-                : 'https://aicard-backend.onrender.com'; // 改成您在 Render 上的實際網址
+                : 'https://aicard-backend.onrender.com';
+
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.src = `${API_BASE_URL}/music/background.mp3`;
 
             // 先宣告全域變數
             let currentSlide = 0;
@@ -827,7 +830,6 @@
             const cancelEditButton = document.querySelector('.cancel-edit-button');
             const saveEditButton = document.querySelector('.save-edit-button');
             const toggleMusicButton = document.getElementById('toggleMusic');
-            const bgMusic = document.getElementById('bgMusic');
             const musicModal = document.querySelector('.music-modal');
             const musicInput = document.getElementById('music-input');
             const cancelMusicButton = document.querySelector('.cancel-music-button');
