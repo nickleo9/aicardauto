@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verna Lin 生日快樂</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+        .card {
+            perspective: 1500px;
+            width: 350px;
+            height: 500px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #fff 0%, #e8ecef 100%);
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .title {
+            font-size: 2.5rem;
+            color: #5e35b1;
+            text-align: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .subtitle {
+            font-size: 1.5rem;
+            color: #7e57c2;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .message {
+            font-size: 1rem;
+            color: #333;
+            text-align: center;
+            line-height: 1.6;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .open-button, .close-button {
+            padding: 10px 20px;
+            background: #7e57c2;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        .open-button:hover, .close-button:hover {
+            background: #5e35b1;
+        }
+        .memory-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .memory-icon {
+            width: 40px;
+            height: 40px;
+            background: #ede7f6;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+        }
+        .memory-icon:hover {
+            transform: scale(1.1);
+            background: #d1c4e9;
+        }
+        .memory-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #7e57c2;
+        }
+        .timeline {
+            width: 100%;
+            max-width: 300px;
+        }
+        .timeline-item {
+            display: none;
+            margin-bottom: 20px;
+        }
+        .timeline-date {
+            font-size: 1.2rem;
+            color: #5e35b1;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        .timeline-content {
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        .photo-gallery {
+            display: none;
+            width: 100%;
+            max-width: 300px;
+        }
+        .photo-gallery-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .photo-sort-button, .add-photo-button {
+            padding: 8px 12px;
+            background: #7e57c2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        .photo-sort-button svg, .add-photo-button svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+        .gallery-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .gallery-slide {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        .photo-frame {
+            min-width: 100%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            aspect-ratio: 16/9;
+        }
+        .photo-frame img.photo-real {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            background: #f5f5f5;
+        }
+        .photo-placeholder {
+            width: 100%;
+            height: 200px;
+            background: #bbdefb;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #5e35b1;
+            font-size: 1rem;
+        }
+        .photo-placeholder svg {
+            width: 50px;
+            height: 50px;
+            fill: #7e57c2;
+            margin-bottom: 10px;
+        }
+        .photo-caption {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 0.9rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .photo-frame:hover .photo-caption {
+            transform: translateY(0);
+        }
+        .photo-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        .photo-action-button {
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .photo-action-button svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+        .gallery-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .gallery-button {
+            background: #7e57c2;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .gallery-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .gallery-dot {
+            width: 8px;
+            height: 8px;
+            background: #d1c4e9;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .gallery-dot.active {
+            background: #7e57c2;
+        }
+        .photo-upload-modal, .edit-modal, .music-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .photo-upload-modal.active, .edit-modal.active, .music-modal.active {
+            display: flex;
+        }
+        .modal-content, .edit-modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .modal-title, .edit-modal-title {
+            font-size: 1.5rem;
+            color: #5e35b1;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .photo-preview {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .photo-preview-placeholder {
+            color: #999;
+            font-size: 1rem;
+        }
+        .file-input-container {
+            margin-bottom: 20px;
+        }
+        .file-input-label {
+            display: block;
+            padding: 10px;
+            background: #7e57c2;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .file-input {
+            display: none;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            display: block;
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .cancel-button, .cancel-edit-button, .cancel-music-button {
+            background: #f5f5f5;
+            color: #333;
+        }
+        .save-button, .save-edit-button, .save-music-button {
+            background: #7e57c2;
+            color: white;
+        }
+        .edit-textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            resize: vertical;
+        }
+        .confetti {
+            position: absolute;
+            pointer-events: none;
+        }
+        .heart {
+            position: absolute;
+            background: #ff7eb9;
+            pointer-events: none;
+        }
+        .heart:before, .heart:after {
+            content: '';
+            position: absolute;
+            background: #ff7eb9;
+            border-radius: 50%;
+        }
+        .heart:before {
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .heart:after {
+            left: 50%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .gallery-container.sort-mode .photo-frame {
+            cursor: move;
+        }
+        .gallery-container.sort-mode .gallery-slide {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+        .save-status {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .save-status.saving {
+            background-color: #2196F3;
+        }
+        .save-status.visible {
+            opacity: 1;
+        }
+        /* 新增分享對話框樣式 */
+        .share-dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .share-dialog {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .share-button {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #7e57c2;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #share-url {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .share-dialog button {
+            padding: 8px 15px;
+            background: #7e57c2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .share-dialog button.close-dialog {
+            background: #f5f5f5;
+            color: #333;
+        }
+        #qrcode-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #qrcode-container img {
+            max-width: 250px;
+            height: auto;
+        }
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(126, 87, 194, 0.8);
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .music-control button {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .music-control svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        .music-control .music-title {
+            color: white;
+            font-size: 0.9rem;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-inner">
+            <div class="card-front">
+                <div class="title" data-editable="true" data-type="title">Verna Lin</div>
+                <div class="subtitle" data-editable="true" data-type="subtitle">生日快樂</div>
+                <svg width="200" height="200" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="cakeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#bbdefb" />
+                            <stop offset="100%" stop-color="#d1c4e9" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="40" y="140" width="120" height="40" rx="5" fill="url(#cakeGradient)" />
+                    <rect x="50" y="100" width="100" height="40" rx="5" fill="url(#cakeGradient)" />
+                    <rect x="60" y="60" width="80" height="40" rx="5" fill="url(#cakeGradient)" />
+                    <rect x="85" y="30" width="5" height="30" fill="#ff7eb9" />
+                    <rect x="110" y="30" width="5" height="30" fill="#ff7eb9" />
+                    <circle cx="87.5" cy="30" r="5" fill="#ffeb3b">
+                        <animate attributeName="opacity" values="0.7;1;0.7" dur="1s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="112.5" cy="30" r="5" fill="#ffeb3b">
+                        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.2s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="60" cy="80" r="5" fill="#ff7eb9" />
+                    <circle cx="80" cy="80" r="5" fill="#ff7eb9" />
+                    <circle cx="100" cy="80" r="5" fill="#ff7eb9" />
+                    <circle cx="120" cy="80" r="5" fill="#ff7eb9" />
+                    <circle cx="140" cy="80" r="5" fill="#ff7eb9" />
+                </svg>
+                <button class="open-button">打開賀卡</button>
+            </div>
+            <div class="card-back">
+                <div class="title" data-editable="true" data-type="back-title">親愛的 Verna</div>
+                <div class="message" data-editable="true" data-type="message">
+                    生日快樂！<br>
+                    我們相處即將滿兩年了，<br>
+                    這段時間有你的陪伴真的很幸福。<br>
+                    一起去過香港、韓國、沖繩，<br>
+                    一起打工、逛展覽、看電影、品嚐美食，<br>
+                    每一刻都是珍貴的回憶。<br>
+                    希望未來的日子裡，<br>
+                    我們能創造更多美好的回憶。<br>
+                    我愛你！
+                </div>
+                <div class="memory-icons">
+                    <div class="memory-icon" data-memory="travel">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20.5,3l-0.16,0.03L15,5.1L9,3L3.36,4.9C3.15,4.97,3,5.15,3,5.38V20.5c0,0.27,0.22,0.5,0.5,0.5l0.16-0.03L9,18.9l6,2.1l5.64-1.9c0.21-0.07,0.36-0.25,0.36-0.48V3.5C21,3.23,20.78,3,20.5,3z M10,5.47l4,1.4v11.66l-4-1.4V5.47z M5,6.46l3-1.01v11.7l-3,1.16V6.46z M19,17.54l-3,1.01V6.86l3-1.16V17.54z"/>
+                        </svg>
+                    </div>
+                    <div class="memory-icon" data-memory="movie">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18,4l2,4h-3l-2-4h-2l2,4h-3l-2-4H8l2,4H7L5,4H4C2.9,4,2,4.9,2,6v12c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V4H18z"/>
+                        </svg>
+                    </div>
+                    <div class="memory-icon" data-memory="food">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M11,9H9V2H7v7H5V2H3v7c0,2.12,1.66,3.84,3.75,3.97V22h2.5v-9.03C11.34,12.84,13,11.12,13,9V2h-2V9z M16,6v8h2.5v8H21V2C18.24,2,16,4.24,16,6z"/>
+                        </svg>
+                    </div>
+                    <div class="memory-icon" data-memory="exhibition">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21,5c0-1.1-0.9-2-2-2h-9v5h11V5z M3,19c0,1.1,0.9,2,2,2h6V10H3V19z M3,5v3h6V3H5C3.9,3,3,3.9,3,5z M18,19c1.1,0,2-0.9,2-2v-7H10v9H18z"/>
+                        </svg>
+                    </div>
+                    <div class="memory-icon" data-memory="photos">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21,19V5c0-1.1-0.9-2-2-2H5c-1.1,0-2,0.9-2,2v14c0,1.1,0.9,2,2,2h14C20.1,21,21,20.1,21,19z M8.5,13.5l2.5,3.01L14.5,12l4.5,6H5L8.5,13.5z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item" id="travel-memory" style="display: none;">
+                        <div class="timeline-date" data-editable="true" data-type="travel-title">旅行回憶</div>
+                        <div class="timeline-content" data-editable="true" data-type="travel-content">一起去過香港、韓國、沖繩，每次旅行都充滿了歡笑和美好的回憶。</div>
+                    </div>
+                    <div class="timeline-item" id="movie-memory" style="display: none;">
+                        <div class="timeline-date" data-editable="true" data-type="movie-title">電影時光</div>
+                        <div class="timeline-content" data-editable="true" data-type="movie-content">一起看過許多電影，分享彼此的想法和感受，這些都是我們共同的回憶。</div>
+                    </div>
+                    <div class="timeline-item" id="food-memory" style="display: none;">
+                        <div class="timeline-date" data-editable="true" data-type="food-title">美食探索</div>
+                        <div class="timeline-content" data-editable="true" data-type="food-content">一起品嚐各種美食，發現新的口味和喜好，每一餐都是一次小小的冒險。</div>
+                    </div>
+                    <div class="timeline-item" id="exhibition-memory" style="display: none;">
+                        <div class="timeline-date" data-editable="true" data-type="exhibition-title">展覽漫步</div>
+                        <div class="timeline-content" data-editable="true" data-type="exhibition-content">一起逛過許多展覽，分享對藝術和文化的熱愛，豐富了我們的精神世界。</div>
+                    </div>
+                </div>
+                <div class="photo-gallery" id="photos-memory">
+                    <div class="photo-gallery-toolbar">
+                        <button class="photo-sort-button">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M3,15h18v-2H3V15z M3,19h18v-2H3V19z M3,11h18V9H3V11z M3,5v2h18V5H3z"/>
+                            </svg>
+                            重新排序
+                        </button>
+                        <button class="add-photo-button">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19,13h-6v6h-2v-6H5v-2h6V5h2v6h6V13z"/>
+                            </svg>
+                            添加照片
+                        </button>
+                    </div>
+                    <div class="gallery-container">
+                        <div class="gallery-slide">
+                            <div class="photo-frame" data-id="1">
+                                <div class="photo-actions">
+                                    <button class="photo-action-button edit-photo-btn">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="photo-action-button delete-photo-btn">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="photo-placeholder">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M21,19V5c0-1.1-0.9-2-2-2H5c-1.1,0-2,0.9-2,2v14c0,1.1,0.9,2,2,2h14C20.1,21,21,20.1,21,19z M8.5,13.5l2.5,3.01L14.5,12l4.5,6H5L8.5,13.5z"/>
+                                    </svg>
+                                    <p>香港之旅</p>
+                                </div>
+                                <div class="photo-caption" data-editable="true" data-type="photo-caption">香港之旅 - 2022年</div>
+                            </div>
+                            <div class="photo-frame" data-id="2">
+                                <div class="photo-actions">
+                                    <button class="photo-action-button edit-photo-btn">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="photo-action-button delete-photo-btn">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="photo-placeholder">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M21,19V5c0-1.1-0.9-2-2-2H5c-1.1,0-2,0.9-2,2v14c0,1.1,0.9,2,2,2h14C20.1,21,21,20.1,21,19z M8.5,13.5l2.5,3.01L14.5,12l4.5,6H5L8.5,13.5z"/>
+                                    </svg>
+                                    <p>韓國之旅</p>
+                                </div>
+                                <div class="photo-caption" data-editable="true" data-type="photo-caption">韓國之旅 - 2022年</div>
+                            </div>
+                            <div class="photo-frame" data-id="3">
+                                <div class="photo-actions">
+                                    <button class="photo-action-button edit-photo-btn">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="photo-action-button delete-photo-btn">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="photo-placeholder">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M21,19V5c0-1.1-0.9-2-2-2H5c-1.1,0-2,0.9-2,2v14c0,1.1,0.9,2,2,2h14C20.1,21,21,20.1,21,19z M8.5,13.5l2.5,3.01L14.5,12l4.5,6H5L8.5,13.5z"/>
+                                    </svg>
+                                    <p>沖繩之旅</p>
+                                </div>
+                                <div class="photo-caption" data-editable="true" data-type="photo-caption">沖繩之旅 - 2023年</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gallery-nav">
+                        <button class="gallery-button prev-button">上一張</button>
+                        <button class="gallery-button next-button">下一張</button>
+                    </div>
+                    <div class="gallery-dots"></div>
+                </div>
+                <button class="close-button">返回</button>
+            </div>
+        </div>
+    </div>
+    <div class="photo-upload-modal">
+        <div class="modal-content">
+            <div class="modal-title">添加新照片</div>
+            <div class="photo-preview">
+                <div class="photo-preview-placeholder">照片預覽區域</div>
+            </div>
+            <div class="file-input-container">
+                <label class="file-input-label" for="file-input">選擇照片</label>
+                <input type="file" class="file-input" id="file-input" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label class="form-label">照片標題</label>
+                <input type="text" class="form-input photo-title-input" placeholder="例如：香港之旅">
+            </div>
+            <div class="form-group">
+                <label class="form-label">照片描述</label>
+                <input type="text" class="form-input photo-desc-input" placeholder="例如：2022年">
+            </div>
+            <div class="form-group">
+                <label class="form-label">照片顏色 (無照片時使用)</label>
+                <input type="color" class="form-input photo-color-input" value="#bbdefb">
+            </div>
+            <div class="form-buttons">
+                <button class="form-button cancel-button">取消</button>
+                <button class="form-button save-button">保存</button>
+            </div>
+        </div>
+    </div>
+    <div class="edit-modal">
+        <div class="edit-modal-content">
+            <div class="edit-modal-title">編輯文字</div>
+            <textarea class="edit-textarea"></textarea>
+            <div class="form-buttons">
+                <button class="form-button cancel-edit-button">取消</button>
+                <button class="form-button save-edit-button">保存</button>
+            </div>
+        </div>
+    </div>
+    <div class="music-modal">
+        <div class="modal-content">
+            <div class="modal-title">選擇背景音樂</div>
+            <div class="form-group">
+                <label class="form-label">選擇音樂文件</label>
+                <div class="file-input-container">
+                    <label class="file-input-label" for="music-input">選擇音樂</label>
+                    <input type="file" class="file-input" id="music-input" accept="audio/*">
+                </div>
+            </div>
+            <div class="form-buttons">
+                <button class="form-button cancel-music-button">取消</button>
+                <button class="form-button save-music-button">保存</button>
+            </div>
+        </div>
+    </div>
+    <div class="music-control">
+        <button id="toggleMusic">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+        </button>
+        <p class="music-title">背景音樂</p>
+    </div>
+    <audio id="bgMusic" loop>
+        <source src="uploads/background.mp3" type="audio/mp3">
+    </audio>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 設定 API 基礎網址
+            const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:5000'
+                : 'https://aicard-backend.onrender.com'; // 改成您在 Render 上的實際網址
+
+            // 先宣告全域變數
+            let currentSlide = 0;
+            let totalSlides = document.querySelectorAll('.photo-frame').length;
+            let selectedPhotoId = null;
+            let currentEditElement = null;
+            let sortMode = false;
+            let selectedFile = null;
+            let MAX_HEARTS = 15; // 預設愛心數量
+            let activeHearts = 0;
+            let heartPool = [];
+
+            // 選取重要的 DOM 元素
+            const card = document.querySelector('.card');
+            const openButton = document.querySelector('.open-button');
+            const closeButton = document.querySelector('.close-button');
+            const memoryIcons = document.querySelectorAll('.memory-icon');
+            const memoryItems = document.querySelectorAll('.timeline-item');
+            const photoGallery = document.querySelector('.photo-gallery');
+            const gallerySlide = document.querySelector('.gallery-slide');
+            const prevButton = document.querySelector('.prev-button');
+            const nextButton = document.querySelector('.next-button');
+            const galleryDots = document.querySelector('.gallery-dots');
+            const addPhotoButton = document.querySelector('.add-photo-button');
+            const photoUploadModal = document.querySelector('.photo-upload-modal');
+            const cancelButton = document.querySelector('.cancel-button');
+            const saveButton = document.querySelector('.save-button');
+            const photoTitleInput = document.querySelector('.photo-title-input');
+            const photoDescInput = document.querySelector('.photo-desc-input');
+            const photoColorInput = document.querySelector('.photo-color-input');
+            const photoPreview = document.querySelector('.photo-preview');
+            const fileInput = document.querySelector('.file-input');
+            const photoSortButton = document.querySelector('.photo-sort-button');
+            const editModal = document.querySelector('.edit-modal');
+            const editTextarea = document.querySelector('.edit-textarea');
+            const cancelEditButton = document.querySelector('.cancel-edit-button');
+            const saveEditButton = document.querySelector('.save-edit-button');
+            const toggleMusicButton = document.getElementById('toggleMusic');
+            const bgMusic = document.getElementById('bgMusic');
+            const musicModal = document.querySelector('.music-modal');
+            const musicInput = document.getElementById('music-input');
+            const cancelMusicButton = document.querySelector('.cancel-music-button');
+            const saveMusicButton = document.querySelector('.save-music-button');
+
+            // 音樂控制功能
+            const musicControl = document.querySelector('.music-control');
+            const musicTitle = musicControl.querySelector('.music-title');
+            let isPlaying = false;
+
+            toggleMusicButton.innerHTML = `
+                <svg viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            `;
+
+            toggleMusicButton.addEventListener('click', () => {
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                    isPlaying = true;
+                    toggleMusicButton.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                        </svg>
+                    `;
+                } else {
+                    bgMusic.pause();
+                    isPlaying = false;
+                    toggleMusicButton.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    `;
+                }
+            });
+
+            // 音樂文件上傳
+            musicInput.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (!file.type.startsWith('audio/')) {
+                    alert('請選擇音樂文件！');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('music', file);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/upload_music`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        bgMusic.src = result.url;
+                        musicTitle.textContent = file.name;
+                        bgMusic.play();
+                        isPlaying = true;
+                        toggleMusicButton.innerHTML = `
+                            <svg viewBox="0 0 24 24">
+                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                            </svg>
+                        `;
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    console.error('上傳音樂失敗:', error);
+                    alert('上傳音樂失敷，請稍後重試！');
+                }
+
+                musicModal.classList.remove('active');
+            });
+
+            // 音樂相關事件
+            musicControl.addEventListener('dblclick', () => {
+                musicModal.classList.add('active');
+            });
+
+            cancelMusicButton.addEventListener('click', () => {
+                musicModal.classList.remove('active');
+            });
+
+            saveMusicButton.addEventListener('click', async () => {
+                const file = musicInput.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('music', file);
+
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/api/upload_music`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            bgMusic.src = result.url;
+                            musicTitle.textContent = file.name;
+                            bgMusic.play();
+                            isPlaying = true;
+                            toggleMusicButton.innerHTML = `
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                </svg>
+                            `;
+                        } else {
+                            throw new Error(result.message);
+                        }
+                    } catch (error) {
+                        console.error('上傳音樂失敗:', error);
+                        alert('上傳音樂失敗，請稍後重試！');
+                    }
+                }
+                musicModal.classList.remove('active');
+            });
+
+            // 打開卡片時自動播放音樂
+            openButton?.addEventListener('click', () => {
+                if (bgMusic.src && bgMusic.paused) {
+                    bgMusic.play();
+                    isPlaying = true;
+                    toggleMusicButton.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                        </svg>
+                    `;
+                }
+            });
+
+            // 檢查是否為檢視模式和是否有分享資料
+            const urlParams = new URLSearchParams(window.location.search);
+            const isViewMode = urlParams.get('view') === 'true';
+            const cardId = urlParams.get('card');
+            const sharedData = urlParams.get('data');
+
+            // 如果有分享資料，先嘗試載入
+            if (sharedData) {
+                try {
+                    // 解碼分享資料時需要先用 atob 解碼 base64，再解碼 UTF-8
+                    const decoded = atob(sharedData);
+                    const decodedStr = decodeURIComponent(escape(decoded));
+                    const decodedData = JSON.parse(decodedStr);
+                    localStorage.setItem('birthdayCardData', JSON.stringify(decodedData));
+                } catch (e) {
+                    console.error('無法載入分享資料:', e);
+                }
+            }
+
+            // 如果是檢視模式，增加愛心數量並啟用檢視模式
+            if (isViewMode && cardId) {
+                loadCardFromServer(cardId).then(cardData => {
+                    if (cardData) {
+                        localStorage.setItem('birthdayCardData', JSON.stringify(cardData));
+                        loadCardData();
+                        enableViewMode();
+                    }
+                });
+            } else if (isViewMode) {
+                MAX_HEARTS = 30;
+                enableViewMode();
+            } else {
+                const shareButton = document.createElement('button');
+                shareButton.className = 'share-button';
+                shareButton.innerHTML = `
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-right: 5px; fill: white;">
+                        <path d="M18,16.08c-0.76,0-1.44,0.3-1.96,0.77L8.91,12.7c0.05-0.23,0.09-0.46,0.09-0.7s-0.04-0.47-0.09-0.7l7.05-4.11C16.5,7.69,17.21,8,18,8c1.66,0,3-1.34,3-3c0-1.66-1.34-3-3-3s-3,1.34-3,3c0,0.24,0.04,0.47,0.09,0.7L8.04,9.81C7.5,9.31,6.79,9,6,9c-1.66,0-3,1.34-3,3c0,1.66,1.34,3,3,3c0.79,0,1.5-0.31,2.04-0.81l7.12,4.16c-0.05,0.21-0.08,0.43-0.08,0.65c0,1.61,1.31,2.92,2.92,2.92s2.92-1.31,2.92-2.92C20.92,17.39,19.61,16.08,18,16.08z"/>
+                    </svg>
+                    分享賀卡
+                `;
+                document.body.appendChild(shareButton);
+
+                shareButton.onclick = async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // 建立對話框
+                    const dialogOverlay = document.createElement('div');
+                    dialogOverlay.className = 'share-dialog-overlay';
+                    dialogOverlay.style.zIndex = '99999';
+                    
+                    const dialog = document.createElement('div');
+                    dialog.className = 'share-dialog';
+                    dialog.style.position = 'relative';
+                    dialog.style.zIndex = '100000';
+                    
+                    dialog.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <h3 style="margin: 0 0 20px 0; color: #5e35b1; font-size: 1.5rem;">分享你的生日賀卡</h3>
+                            <p style="margin-bottom: 15px;">正在準備分享連結，請稍候...</p>
+                        </div>
+                    `;
+                    
+                    dialogOverlay.appendChild(dialog);
+                    document.body.appendChild(dialogOverlay);
+                    
+                    try {
+                        // 先保存本地數據
+                        saveCardData();
+                        
+                        // 準備要發送的數據
+                        const cardData = {
+                            title: document.querySelector('[data-type="title"]')?.innerHTML || "",
+                            subtitle: document.querySelector('[data-type="subtitle"]')?.innerHTML || "",
+                            backTitle: document.querySelector('[data-type="back-title"]')?.innerHTML || "",
+                            message: document.querySelector('[data-type="message"]')?.innerHTML || "",
+                            travelTitle: document.querySelector('[data-type="travel-title"]')?.innerHTML || "",
+                            travelContent: document.querySelector('[data-type="travel-content"]')?.innerHTML || "",
+                            movieTitle: document.querySelector('[data-type="movie-title"]')?.innerHTML || "",
+                            movieContent: document.querySelector('[data-type="movie-content"]')?.innerHTML || "",
+                            foodTitle: document.querySelector('[data-type="food-title"]')?.innerHTML || "",
+                            foodContent: document.querySelector('[data-type="food-content"]')?.innerHTML || "",
+                            exhibitionTitle: document.querySelector('[data-type="exhibition-title"]')?.innerHTML || "",
+                            exhibitionContent: document.querySelector('[data-type="exhibition-content"]')?.innerHTML || "",
+                            photos: []
+                        };
+
+                        // 收集照片數據
+                        document.querySelectorAll('.photo-frame').forEach(frame => {
+                            const photoData = {
+                                id: frame.getAttribute('data-id')
+                            };
+                            const realPhoto = frame.querySelector('.photo-real');
+                            const placeholderPhoto = frame.querySelector('.photo-placeholder');
+                            const photoCaption = frame.querySelector('.photo-caption');
+
+                            if (realPhoto) {
+                                photoData.type = 'real';
+                                photoData.src = realPhoto.src;
+                            } else if (placeholderPhoto) {
+                                photoData.type = 'placeholder';
+                                photoData.title = placeholderPhoto.querySelector('p')?.textContent || "";
+                                photoData.background = placeholderPhoto.style.background || "";
+                            }
+                            if (photoCaption) {
+                                photoData.caption = photoCaption.innerHTML;
+                            }
+                            cardData.photos.push(photoData);
+                        });
+
+                        // 發送到服務器
+                        const response = await fetch(`${API_BASE_URL}/api/save_card`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(cardData)
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('網路請求失敗');
+                        }
+
+                        const result = await response.json();
+                        if (!result.success) {
+                            throw new Error(result.message || '保存失敗');
+                        }
+
+                        // 構建完整的分享 URL
+                        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                            ? 'http://localhost:5000/card.html'
+                            : 'https://aicard-frontend.onrender.com/card.html'; // 改成您在 Render 上的前端網址
+                        const shareUrl = `${baseUrl}?view=true&card=${result.card_id}`;
+                        
+                        // 更新對話框內容
+                        dialog.innerHTML = `
+                            <div style="text-align: center; padding: 20px;">
+                                <h3 style="margin: 0 0 20px 0; color: #5e35b1; font-size: 1.5rem;">分享你的生日賀卡</h3>
+                                <div style="margin-bottom: 20px;">
+                                    <input type="text" id="share-url" value="${shareUrl}" 
+                                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;" readonly>
+                                    <button id="copy-url-btn" 
+                                        style="width: 100%; padding: 10px; background: #7e57c2; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        複製連結
+                                    </button>
+                                </div>
+                                <button id="close-dialog-btn" 
+                                    style="width: 100%; padding: 10px; background: #f5f5f5; color: #333; border: none; border-radius: 5px; cursor: pointer;">
+                                    關閉
+                                </button>
+                            </div>
+                        `;
+                        
+                        // 複製連結功能
+                        const copyBtn = document.getElementById('copy-url-btn');
+                        const urlInput = document.getElementById('share-url');
+                        
+                        copyBtn.onclick = async function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            try {
+                                await navigator.clipboard.writeText(shareUrl);
+                                this.textContent = '已複製!';
+                                setTimeout(() => this.textContent = '複製連結', 2000);
+                            } catch (err) {
+                                urlInput.select();
+                                document.execCommand('copy');
+                                this.textContent = '已複製!';
+                                setTimeout(() => this.textContent = '複製連結', 2000);
+                            }
+                        };
+                        
+                        // 關閉按鈕
+                        document.getElementById('close-dialog-btn').onclick = function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            document.body.removeChild(dialogOverlay);
+                        };
+                        
+                    } catch (error) {
+                        console.error('分享失敗:', error);
+                        dialog.innerHTML = `
+                            <div style="text-align: center; padding: 20px;">
+                                <h3 style="margin: 0 0 20px 0; color: #5e35b1; font-size: 1.5rem;">分享失敗</h3>
+                                <p style="margin-bottom: 20px; color: #f44336;">請稍後重試！</p>
+                                <button id="error-close-btn" 
+                                    style="width: 100%; padding: 10px; background: #f5f5f5; color: #333; border: none; border-radius: 5px; cursor: pointer;">
+                                    關閉
+                                </button>
+                            </div>
+                        `;
+                        
+                        document.getElementById('error-close-btn').onclick = function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            document.body.removeChild(dialogOverlay);
+                        };
+                    }
+                    
+                    return false;
+                };
+            }
+
+            // 無論是否為檢視模式，都啟用愛心動畫
+            setInterval(() => {
+                if (activeHearts < MAX_HEARTS) {
+                    createHeart();
+                }
+            }, 1000);
+
+            // 初始化愛心動畫
+            initHearts();
+
+            // 翻轉卡片事件監聽器
+            if (openButton) {
+                openButton.addEventListener('click', () => {
+                    card.classList.add('flipped');
+                    createConfetti();
+                });
+            }
+
+            if (closeButton) {
+                closeButton.addEventListener('click', () => {
+                    card.classList.remove('flipped');
+                });
+            }
+
+            // 音樂控制器事件
+            toggleMusicButton.addEventListener('click', () => {
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                } else {
+                    bgMusic.pause();
+                }
+            });
+
+            // 音樂選擇功能
+            toggleMusicButton.addEventListener('dblclick', () => {
+                musicModal.classList.add('active');
+            });
+
+            cancelMusicButton.addEventListener('click', () => {
+                musicModal.classList.remove('active');
+            });
+
+            saveMusicButton.addEventListener('click', () => {
+                const file = musicInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        bgMusic.src = event.target.result;
+                        bgMusic.play();
+                    };
+                    reader.readAsDataURL(file);
+                }
+                musicModal.classList.remove('active');
+            });
+
+            // 防抖函數：限制保存頻率
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // 保存卡片數據
+            function saveCardData() {
+                if (isViewMode) return;
+                showSaveStatus('saving');
+
+                const cardData = {
+                    title: document.querySelector('[data-type="title"]')?.innerHTML || "",
+                    subtitle: document.querySelector('[data-type="subtitle"]')?.innerHTML || "",
+                    backTitle: document.querySelector('[data-type="back-title"]')?.innerHTML || "",
+                    message: document.querySelector('[data-type="message"]')?.innerHTML || "",
+                    travelTitle: document.querySelector('[data-type="travel-title"]')?.innerHTML || "",
+                    travelContent: document.querySelector('[data-type="travel-content"]')?.innerHTML || "",
+                    movieTitle: document.querySelector('[data-type="movie-title"]')?.innerHTML || "",
+                    movieContent: document.querySelector('[data-type="movie-content"]')?.innerHTML || "",
+                    foodTitle: document.querySelector('[data-type="food-title"]')?.innerHTML || "",
+                    foodContent: document.querySelector('[data-type="food-content"]')?.innerHTML || "",
+                    exhibitionTitle: document.querySelector('[data-type="exhibition-title"]')?.innerHTML || "",
+                    exhibitionContent: document.querySelector('[data-type="exhibition-content"]')?.innerHTML || "",
+                    photos: []
+                };
+
+                document.querySelectorAll('.photo-frame').forEach(frame => {
+                    const photoData = {
+                        id: frame.getAttribute('data-id')
+                    };
+                    const realPhoto = frame.querySelector('.photo-real');
+                    const placeholderPhoto = frame.querySelector('.photo-placeholder');
+                    const photoCaption = frame.querySelector('.photo-caption');
+
+                    if (realPhoto) {
+                        photoData.type = 'real';
+                        photoData.src = realPhoto.src;
+                    } else if (placeholderPhoto) {
+                        photoData.type = 'placeholder';
+                        photoData.title = placeholderPhoto.querySelector('p')?.textContent || "";
+                        photoData.background = placeholderPhoto.style.background || "";
+                    }
+                    if (photoCaption) {
+                        photoData.caption = photoCaption.innerHTML;
+                    }
+                    cardData.photos.push(photoData);
+                });
+
+                try {
+                    localStorage.setItem('birthdayCardData', JSON.stringify(cardData));
+                    showSaveStatus('saved');
+                } catch (e) {
+                    if (e.name === 'QuotaExceededError') {
+                        alert('儲存空間不足，請刪除部分照片後重試！');
+                    }
+                }
+            }
+
+            // 顯示保存狀態
+            function showSaveStatus(status) {
+                let saveStatus = document.querySelector('.save-status');
+                if (!saveStatus) {
+                    saveStatus = document.createElement('div');
+                    saveStatus.className = 'save-status';
+                    document.body.appendChild(saveStatus);
+                }
+
+                saveStatus.classList.remove('saving', 'visible');
+                if (status === 'saving') {
+                    saveStatus.textContent = '正在儲存...';
+                    saveStatus.classList.add('saving', 'visible');
+                } else if (status === 'saved') {
+                    saveStatus.textContent = '已儲存！';
+                    saveStatus.classList.add('visible');
+                    setTimeout(() => {
+                        saveStatus.classList.remove('visible');
+                    }, 2000);
+                }
+            }
+
+            // 防抖保存
+            const debouncedSave = debounce(saveCardData, 500);
+
+            // 載入卡片數據
+            function loadCardData() {
+                const savedData = localStorage.getItem('birthdayCardData');
+                if (!savedData) return false;
+
+                try {
+                    const cardData = JSON.parse(savedData);
+                    if (cardData.title) document.querySelector('[data-type="title"]').innerHTML = cardData.title;
+                    if (cardData.subtitle) document.querySelector('[data-type="subtitle"]').innerHTML = cardData.subtitle;
+                    if (cardData.backTitle) document.querySelector('[data-type="back-title"]').innerHTML = cardData.backTitle;
+                    if (cardData.message) document.querySelector('[data-type="message"]').innerHTML = cardData.message;
+                    if (cardData.travelTitle) document.querySelector('[data-type="travel-title"]').innerHTML = cardData.travelTitle;
+                    if (cardData.travelContent) document.querySelector('[data-type="travel-content"]').innerHTML = cardData.travelContent;
+                    if (cardData.movieTitle) document.querySelector('[data-type="movie-title"]').innerHTML = cardData.movieTitle;
+                    if (cardData.movieContent) document.querySelector('[data-type="movie-content"]').innerHTML = cardData.movieContent;
+                    if (cardData.foodTitle) document.querySelector('[data-type="food-title"]').innerHTML = cardData.foodTitle;
+                    if (cardData.foodContent) document.querySelector('[data-type="food-content"]').innerHTML = cardData.foodContent;
+                    if (cardData.exhibitionTitle) document.querySelector('[data-type="exhibition-title"]').innerHTML = cardData.exhibitionTitle;
+                    if (cardData.exhibitionContent) document.querySelector('[data-type="exhibition-content"]').innerHTML = cardData.exhibitionContent;
+
+                    gallerySlide.innerHTML = '';
+                    if (cardData.photos && cardData.photos.length > 0) {
+                        cardData.photos.forEach(photoData => {
+                            const photoFrame = document.createElement('div');
+                            photoFrame.className = 'photo-frame';
+                            photoFrame.setAttribute('data-id', photoData.id);
+
+                            const photoActions = document.createElement('div');
+                            photoActions.className = 'photo-actions';
+                            photoActions.innerHTML = `
+                                <button class="photo-action-button edit-photo-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                    </svg>
+                                </button>
+                                <button class="photo-action-button delete-photo-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                    </svg>
+                                </button>
+                            `;
+
+                            if (photoData.type === 'real' && photoData.src) {
+                                const img = document.createElement('img');
+                                img.src = photoData.src;
+                                img.className = 'photo-real';
+                                photoFrame.appendChild(img);
+                            } else if (photoData.type === 'placeholder') {
+                                const photoPlaceholder = document.createElement('div');
+                                photoPlaceholder.className = 'photo-placeholder';
+                                if (photoData.background) {
+                                    photoPlaceholder.style.background = photoData.background;
+                                }
+                                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                                svg.setAttribute('viewBox', '0 0 24 24');
+                                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                                path.setAttribute('d', 'M21,19V5c0-1.1-0.9-2-2-2H5c-1.1,0-2,0.9-2,2v14c0,1.1,0.9,2,2,2h14C20.1,21,21,20.1,21,19z M8.5,13.5l2.5,3.01L14.5,12l4.5,6H5L8.5,13.5z');
+                                svg.appendChild(path);
+                                const p = document.createElement('p');
+                                p.textContent = photoData.title || "";
+                                photoPlaceholder.appendChild(svg);
+                                photoPlaceholder.appendChild(p);
+                                photoFrame.appendChild(photoPlaceholder);
+                            }
+
+                            photoFrame.appendChild(photoActions);
+                            if (photoData.caption) {
+                                const photoCaption = document.createElement('div');
+                                photoCaption.className = 'photo-caption';
+                                photoCaption.innerHTML = photoData.caption;
+                                photoCaption.setAttribute('data-editable', 'true');
+                                photoCaption.setAttribute('data-type', 'photo-caption');
+                                photoFrame.appendChild(photoCaption);
+                            }
+
+                            gallerySlide.appendChild(photoFrame);
+                            if (!isViewMode) {
+                                addPhotoEventListeners(photoFrame);
+                            }
+                        });
+                        initGalleryDots();
+                        goToSlide(0);
+                    }
+                    return true;
+                } catch (error) {
+                    console.error('載入數據失敗:', error);
+                    return false;
+                }
+            }
+
+            // 初始化照片集圓點
+            function initGalleryDots() {
+                galleryDots.innerHTML = '';
+                const frames = document.querySelectorAll('.photo-frame');
+                totalSlides = frames.length;
+                for (let i = 0; i < totalSlides; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'gallery-dot';
+                    if (i === currentSlide) {
+                        dot.classList.add('active');
+                    }
+                    dot.addEventListener('click', () => goToSlide(i));
+                    galleryDots.appendChild(dot);
+                }
+            }
+
+            // 切換到指定照片
+            function goToSlide(index) {
+                if (totalSlides === 0) return;
+                if (index >= totalSlides) index = 0;
+                if (index < 0) index = totalSlides - 1;
+                currentSlide = index;
+                gallerySlide.style.transform = `translateX(-${currentSlide * 100}%)`;
+                updateDots();
+            }
+
+            // 更新圓點狀態
+            function updateDots() {
+                const dots = document.querySelectorAll('.gallery-dot');
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentSlide);
+                });
+            }
+
+            // 下一張照片
+            function nextSlide() {
+                if (totalSlides === 0) return;
+                goToSlide(currentSlide + 1);
+            }
+
+            // 上一張照片
+            function prevSlide() {
+                if (totalSlides === 0) return;
+                goToSlide(currentSlide - 1);
+            }
+
+            // 記憶圖標點擊事件
+            memoryIcons.forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const memory = this.getAttribute('data-memory');
+                    memoryItems.forEach(item => item.style.display = 'none');
+                    photoGallery.style.display = 'none';
+                    if (memory === 'photos') {
+                        photoGallery.style.display = 'block';
+                        initGalleryDots();
+                    } else {
+                        document.getElementById(memory + '-memory').style.display = 'block';
+                    }
+                });
+            });
+
+            // 照片導航按鈕
+            nextButton?.addEventListener('click', nextSlide);
+            prevButton?.addEventListener('click', prevSlide);
+
+            // 添加照片事件監聽器
+            function addPhotoEventListeners(photoFrame) {
+                if (isViewMode) return;
+                const editBtn = photoFrame.querySelector('.edit-photo-btn');
+                const deleteBtn = photoFrame.querySelector('.delete-photo-btn');
+                const photoCaption = photoFrame.querySelector('.photo-caption');
+
+                if (editBtn) {
+                    editBtn.addEventListener('click', () => {
+                        const photoId = photoFrame.getAttribute('data-id');
+                        editPhoto(photoId);
+                    });
+                }
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', () => {
+                        const photoId = photoFrame.getAttribute('data-id');
+                        if (confirm('確定要刪除這張照片嗎？')) {
+                            deletePhoto(photoId);
+                            debouncedSave();
+                        }
+                    });
+                }
+                if (photoCaption) {
+                    photoCaption.addEventListener('click', () => openEditModal(photoCaption));
+                    photoCaption.setAttribute('tabindex', '0');
+                    photoCaption.addEventListener('keydown', e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            openEditModal(photoCaption);
+                            e.preventDefault();
+                        }
+                    });
+                }
+            }
+
+            // 編輯照片
+            function editPhoto(photoId) {
+                if (isViewMode) return;
+                selectedPhotoId = photoId;
+                const photoFrame = document.querySelector(`.photo-frame[data-id="${photoId}"]`);
+                if (!photoFrame) return;
+
+                const photoPlaceholder = photoFrame.querySelector('.photo-placeholder');
+                const photoCaption = photoFrame.querySelector('.photo-caption');
+                let title = '';
+                let desc = '';
+                let color = '#bbdefb';
+
+                if (photoPlaceholder) {
+                    const p = photoPlaceholder.querySelector('p');
+                    if (p) title = p.textContent;
+                    color = photoPlaceholder.style.background || color;
+                }
+                if (photoCaption) {
+                    const captionText = photoCaption.textContent;
+                    const parts = captionText.split(' - ');
+                    if (parts.length > 0) title = title || parts[0];
+                    if (parts.length > 1) desc = parts[1];
+                }
+
+                photoTitleInput.value = title;
+                photoDescInput.value = desc;
+                photoColorInput.value = color;
+
+                const img = photoFrame.querySelector('.photo-real');
+                if (img) {
+                    photoPreview.innerHTML = `<img src="${img.src}" alt="${title}">`;
+                } else {
+                    updatePhotoPreview();
+                }
+
+                photoUploadModal.classList.add('active');
+            }
+
+            // 添加照片按鈕
+            if (!isViewMode) {
+                addPhotoButton.addEventListener('click', () => {
+                    photoUploadModal.classList.add('active');
+                    resetPhotoForm();
+                });
+            }
+
+            // 取消按鈕
+            cancelButton.addEventListener('click', () => {
+                photoUploadModal.classList.remove('active');
+                resetPhotoForm();
+            });
+
+            // 文件選擇事件
+            if (!isViewMode) {
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                        alert('僅支持 JPEG 或 PNG 格式！');
+                        return;
+                    }
+                    
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('圖片大小不能超過 5MB！');
+                        return;
+                    }
+                    
+                    selectedFile = file;
+                    const reader = new FileReader();
+                    reader.onload = event => {
+                        photoPreview.innerHTML = `<img src="${event.target.result}" alt="預覽">`;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // 保存按鈕
+            if (!isViewMode) {
+                saveButton.addEventListener('click', async () => {
+                    const title = photoTitleInput.value || '未命名照片';
+                    const desc = photoDescInput.value || '無描述';
+                    const color = photoColorInput.value;
+
+                    if (selectedFile) {
+                        const formData = new FormData();
+                        formData.append('photo', selectedFile);
+                        
+                        try {
+                            const response = await fetch(`${API_BASE_URL}/api/upload_photo`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            const result = await response.json();
+                            if (result.success) {
+                                const photoUrl = `${API_BASE_URL}${result.url}`;
+                                if (selectedPhotoId) {
+                                    updatePhoto(selectedPhotoId, title, desc, color, null, photoUrl);
+                                } else {
+                                    addNewPhoto(title, desc, color, null, photoUrl);
+                                }
+                            } else {
+                                throw new Error(result.message);
+                            }
+                        } catch (error) {
+                            console.error('上傳照片失敗:', error);
+                            alert('上傳照片失敗，請稍後重試！');
+                            return;
+                        }
+                    } else {
+                        if (selectedPhotoId) {
+                            updatePhoto(selectedPhotoId, title, desc, color);
+                        } else {
+                            addNewPhoto(title, desc, color);
+                        }
+                    }
+
+                    photoUploadModal.classList.remove('active');
+                    resetPhotoForm();
+                    debouncedSave();
+                });
+            }
+
+            // 重置表單
+            function resetPhotoForm() {
+                photoTitleInput.value = '';
+                photoDescInput.value = '';
+                photoColorInput.value = '#bbdefb';
+                photoPreview.innerHTML = '<div class="photo-preview-placeholder">照片預覽區域</div>';
+                selectedFile = null;
+                selectedPhotoId = null;
+            }
+
+            // 添加新照片
+            function addNewPhoto(title, desc, color, file, photoUrl = null) {
+                const photoId = Date.now().toString();
+                const photoFrame = document.createElement('div');
+                photoFrame.className = 'photo-frame';
+                photoFrame.setAttribute('data-id', photoId);
+
+                const photoActions = document.createElement('div');
+                photoActions.className = 'photo-actions';
+                photoActions.innerHTML = `
+                    <button class="photo-action-button edit-photo-btn">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                    </button>
+                    <button class="photo-action-button delete-photo-btn">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                        </svg>
+                    </button>
+                `;
+
+                if (file || photoUrl) {
+                    const img = document.createElement('img');
+                    img.src = photoUrl || URL.createObjectURL(file);
+                    img.className = 'photo-real';
+                    img.alt = title;
+                    photoFrame.appendChild(img);
+                    photoFrame.appendChild(photoActions);
+                    const photoCaption = document.createElement('div');
+                    photoCaption.className = 'photo-caption';
+                    photoCaption.textContent = `${title} - ${desc}`;
+                    photoCaption.setAttribute('data-editable', 'true');
+                    photoCaption.setAttribute('data-type', 'photo-caption');
+                    photoFrame.appendChild(photoCaption);
+                    gallerySlide.appendChild(photoFrame);
+                    initGalleryDots();
+                    goToSlide(totalSlides);
+                    if (!isViewMode) addPhotoEventListeners(photoFrame);
+                } else {
+                    const photoPlaceholder = document.createElement('div');
+                    photoPlaceholder.className = 'photo-placeholder';
+                    photoPlaceholder.style.background = color;
+                    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    svg.setAttribute('viewBox', '0 0 24 24');
+                    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    path.setAttribute('d', 'M21,19V5c0-1.1-0.9-2-2-2H5c-1.1,0-2,0.9-2,2v14c0,1.1,0.9,2,2,2h14C20.1,21,21,20.1,21,19z M8.5,13.5l2.5,3.01L14.5,12l4.5,6H5L8.5,13.5z');
+                    svg.appendChild(path);
+                    const p = document.createElement('p');
+                    p.textContent = title;
+                    photoPlaceholder.appendChild(svg);
+                    photoPlaceholder.appendChild(p);
+                    photoFrame.appendChild(photoPlaceholder);
+                    photoFrame.appendChild(photoActions);
+                    const photoCaption = document.createElement('div');
+                    photoCaption.className = 'photo-caption';
+                    photoCaption.textContent = `${title} - ${desc}`;
+                    photoCaption.setAttribute('data-editable', 'true');
+                    photoCaption.setAttribute('data-type', 'photo-caption');
+                    photoFrame.appendChild(photoCaption);
+                    gallerySlide.appendChild(photoFrame);
+                    initGalleryDots();
+                    goToSlide(totalSlides);
+                    if (!isViewMode) addPhotoEventListeners(photoFrame);
+                }
+            }
+
+            // 更新照片
+            function updatePhoto(photoId, title, desc, color, file, photoUrl = null) {
+                const photoFrame = document.querySelector(`.photo-frame[data-id="${photoId}"]`);
+                if (!photoFrame) return;
+
+                while (photoFrame.firstChild) {
+                    photoFrame.removeChild(photoFrame.firstChild);
+                }
+
+                const photoActions = document.createElement('div');
+                photoActions.className = 'photo-actions';
+                photoActions.innerHTML = `
+                    <button class="photo-action-button edit-photo-btn">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                    </button>
+                    <button class="photo-action-button delete-photo-btn">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                        </svg>
+                    </button>
+                `;
+
+                if (file || photoUrl) {
+                    const img = document.createElement('img');
+                    img.src = photoUrl || URL.createObjectURL(file);
+                    img.className = 'photo-real';
+                    img.alt = title;
+                    photoFrame.appendChild(img);
+                    photoFrame.appendChild(photoActions);
+                    const photoCaption = document.createElement('div');
+                    photoCaption.className = 'photo-caption';
+                    photoCaption.textContent = `${title} - ${desc}`;
+                    photoCaption.setAttribute('data-editable', 'true');
+                    photoCaption.setAttribute('data-type', 'photo-caption');
+                    photoFrame.appendChild(photoCaption);
+                    if (!isViewMode) addPhotoEventListeners(photoFrame);
+                } else {
+                    const photoPlaceholder = document.createElement('div');
+                    photoPlaceholder.className = 'photo-placeholder';
+                    photoPlaceholder.style.background = color;
+                    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    svg.setAttribute('viewBox', '0 0 24 24');
+                    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    path.setAttribute('d', 'M21,19V5c0-1.1-0.9-2-2-2H5c-1.1,0-2,0.9-2,2v14c0,1.1,0.9,2,2,2h14C20.1,21,21,20.1,21,19z M8.5,13.5l2.5,3.01L14.5,12l4.5,6H5L8.5,13.5z');
+                    svg.appendChild(path);
+                    const p = document.createElement('p');
+                    p.textContent = title;
+                    photoPlaceholder.appendChild(svg);
+                    photoPlaceholder.appendChild(p);
+                    photoFrame.appendChild(photoPlaceholder);
+                    photoFrame.appendChild(photoActions);
+                    const photoCaption = document.createElement('div');
+                    photoCaption.className = 'photo-caption';
+                    photoCaption.textContent = `${title} - ${desc}`;
+                    photoCaption.setAttribute('data-editable', 'true');
+                    photoCaption.setAttribute('data-type', 'photo-caption');
+                    photoFrame.appendChild(photoCaption);
+                    if (!isViewMode) addPhotoEventListeners(photoFrame);
+                }
+            }
+
+            // 刪除照片
+            function deletePhoto(photoId) {
+                const photoFrame = document.querySelector(`.photo-frame[data-id="${photoId}"]`);
+                if (!photoFrame) return;
+
+                const frames = Array.from(document.querySelectorAll('.photo-frame'));
+                const index = frames.indexOf(photoFrame);
+                photoFrame.remove();
+                initGalleryDots();
+                if (index <= currentSlide && currentSlide > 0) {
+                    goToSlide(currentSlide - 1);
+                } else {
+                    goToSlide(currentSlide);
+                }
+            }
+
+            // 照片顏色與標題預覽
+            if (!isViewMode) {
+                photoColorInput.addEventListener('input', () => {
+                    updatePhotoPreview();
+                    debouncedSave();
+                });
+                photoTitleInput.addEventListener('input', () => {
+                    updatePhotoPreview();
+                    debouncedSave();
+                });
+                photoDescInput.addEventListener('input', debouncedSave);
+            }
+
+            // 更新照片預覽
+            function updatePhotoPreview() {
+                if (selectedFile) return;
+                const title = photoTitleInput.value || '未命名照片';
+                const color = photoColorInput.value;
+                photoPreview.innerHTML = `
+                    <div class="photo-placeholder" style="background: ${color}">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21,19V5c0-1.1-0.9-2-2-2H5c-1.1,0-2,0.9-2,2v14c0,1.1,0.9,2,2,2h14C20.1,21,21,20.1,21,19z M8.5,13.5l2.5,3.01L14.5,12l4.5,6H5L8.5,13.5z"/>
+                        </svg>
+                        <p>${title}</p>
+                    </div>
+                `;
+            }
+
+            // 照片排序功能
+            if (!isViewMode) {
+                photoSortButton.addEventListener('click', () => {
+                    toggleSortMode();
+                    if (!sortMode) debouncedSave();
+                });
+            }
+
+            // 切換排序模式
+            function toggleSortMode() {
+                if (isViewMode) return;
+                sortMode = !sortMode;
+                const galleryContainer = document.querySelector('.gallery-container');
+                if (sortMode) {
+                    photoSortButton.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3,15h18v-2H3V15z M3,19h18v-2H3V19z M3,11h18V9H3V11z M3,5v2h18V5H3z"/>
+                        </svg>
+                        完成排序
+                    `;
+                    galleryContainer.classList.add('sort-mode');
+                    enableDragSort();
+                } else {
+                    photoSortButton.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3,15h18v-2H3V15z M3,19h18v-2H3V19z M3,11h18V9H3V11z M3,5v2h18V5H3z"/>
+                        </svg>
+                        重新排序
+                    `;
+                    galleryContainer.classList.remove('sort-mode');
+                    disableDragSort();
+                }
+            }
+
+            // 啟用拖拽排序
+            function enableDragSort() {
+                const frames = document.querySelectorAll('.photo-frame');
+                frames.forEach(frame => {
+                    frame.setAttribute('draggable', 'true');
+                    frame.addEventListener('dragstart', handleDragStart);
+                    frame.addEventListener('dragover', handleDragOver);
+                    frame.addEventListener('drop', handleDrop);
+                    frame.addEventListener('dragend', handleDragEnd);
+                });
+            }
+
+            // 禁用拖拽排序
+            function disableDragSort() {
+                const frames = document.querySelectorAll('.photo-frame');
+                frames.forEach(frame => {
+                    frame.removeAttribute('draggable');
+                    frame.removeEventListener('dragstart', handleDragStart);
+                    frame.removeEventListener('dragover', handleDragOver);
+                    frame.removeEventListener('drop', handleDrop);
+                    frame.removeEventListener('dragend', handleDragEnd);
+                });
+            }
+
+            let dragSrcEl = null;
+
+            function handleDragStart(e) {
+                dragSrcEl = this;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.innerHTML);
+                this.style.opacity = '0.4';
+            }
+
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                return false;
+            }
+
+            function handleDrop(e) {
+                e.stopPropagation();
+                if (dragSrcEl !== this) {
+                    const frames = Array.from(document.querySelectorAll('.photo-frame'));
+                    const srcIndex = frames.indexOf(dragSrcEl);
+                    const destIndex = frames.indexOf(this);
+                    if (srcIndex < destIndex) {
+                        gallerySlide.insertBefore(dragSrcEl, this.nextSibling);
+                    } else {
+                        gallerySlide.insertBefore(dragSrcEl, this);
+                    }
+                    initGalleryDots();
+                    goToSlide(destIndex);
+                }
+                return false;
+            }
+
+            function handleDragEnd() {
+                this.style.opacity = '1';
+            }
+
+            // 文字編輯功能
+            if (!isViewMode) {
+                const editableElements = document.querySelectorAll('[data-editable="true"]');
+                editableElements.forEach(element => {
+                    element.addEventListener('click', () => openEditModal(element));
+                    element.setAttribute('tabindex', '0');
+                    element.addEventListener('keydown', e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            openEditModal(element);
+                            e.preventDefault();
+                        }
+                    });
+                });
+            }
+
+            // 打開編輯模態框
+            function openEditModal(element) {
+                if (isViewMode) return;
+                currentEditElement = element;
+                const content = element.innerHTML.replace(/<br>/g, '\n');
+                editTextarea.value = content;
+                editModal.classList.add('active');
+            }
+
+            // 取消編輯
+            if (!isViewMode) {
+                cancelEditButton.addEventListener('click', () => {
+                    editModal.classList.remove('active');
+                    currentEditElement = null;
+                });
+            }
+
+            // 保存編輯
+            if (!isViewMode) {
+                saveEditButton.addEventListener('click', () => {
+                    if (currentEditElement) {
+                        const content = editTextarea.value.replace(/\n/g, '<br>');
+                        currentEditElement.innerHTML = content;
+                        debouncedSave();
+                    }
+                    editModal.classList.remove('active');
+                    currentEditElement = null;
+                });
+            }
+
+            // 創建五彩紙屑
+            function createConfetti() {
+                const confettiCount = 150;
+                const colors = ['#bbdefb', '#d1c4e9', '#ff7eb9', '#90caf9', '#ce93d8'];
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    const size = Math.random() * 10 + 5;
+                    const shape = Math.random() > 0.5 ? '50%' : '0';
+                    const left = Math.random() * 100;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    confetti.style.borderRadius = shape;
+                    confetti.style.left = `${left}%`;
+                    confetti.style.top = '-20px';
+                    confetti.style.backgroundColor = color;
+                    confetti.style.opacity = '0.4';
+                    document.body.appendChild(confetti);
+
+                    const duration = Math.random() * 3 + 5;
+                    const delay = Math.random() * 2;
+                    confetti.animate([
+                        { transform: `translateY(0) rotate(0deg)`, opacity: 0.4 },
+                        { transform: `translateY(${window.innerHeight * 0.7}px) rotate(${Math.random() * 360}deg)`, opacity: 0.2 },
+                        { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                    ], {
+                        duration: duration * 1000,
+                        delay: delay * 1000,
+                        easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)',
+                        fill: 'forwards'
+                    }).onfinish = () => confetti.remove();
+                }
+            }
+
+            // 創建愛心
+            function createHeart() {
+                if (activeHearts >= MAX_HEARTS) return;
+                activeHearts++;
+                let heart;
+                if (heartPool.length > 0) {
+                    heart = heartPool.pop();
+                    heart.style.display = 'block';
+                } else {
+                    heart = document.createElement('div');
+                    heart.className = 'heart';
+                    document.body.appendChild(heart);
+                }
+                const left = Math.random() * 100;
+                const size = Math.random() * 20 + 10;
+                const startPosition = Math.random() * window.innerHeight;
+                heart.style.left = `${left}%`;
+                heart.style.top = `${startPosition}px`;
+                heart.style.width = `${size}px`;
+                heart.style.height = `${size}px`;
+                heart.style.opacity = '0.7';
+                const duration = Math.random() * 8 + 5;
+                const floatDistance = Math.random() * 200 - 100;
+                const animation = heart.animate([
+                    { transform: `rotate(45deg) translateY(0) translateX(0)`, opacity: 0 },
+                    { transform: `rotate(45deg) translateY(-${window.innerHeight/4}px) translateX(${floatDistance}px)`, opacity: 0.7 },
+                    { transform: `rotate(45deg) translateY(-${window.innerHeight/2}px) translateX(${floatDistance * 2}px)`, opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    easing: 'ease-in-out',
+                    fill: 'forwards'
+                });
+                animation.onfinish = () => {
+                    heart.style.display = 'none';
+                    heartPool.push(heart);
+                    activeHearts--;
+                    setTimeout(createHeart, Math.random() * 500);
+                };
+            }
+
+            // 初始化愛心動畫
+            function initHearts() {
+                for (let i = 0; i < MAX_HEARTS; i++) {
+                    setTimeout(() => {
+                        createHeart();
+                    }, i * 1000);
+                }
+            }
+
+            // 啟用檢視模式
+            function enableViewMode() {
+                // 隱藏所有編輯相關 UI
+                document.querySelectorAll('.edit-photo-btn, .delete-photo-btn, .add-photo-button, .photo-sort-button, .photo-actions').forEach(el => {
+                    el.remove();
+                });
+                document.querySelectorAll('.photo-upload-modal, .edit-modal, .music-modal').forEach(modal => {
+                    modal.remove();
+                });
+
+                // 移除可編輯屬性並禁用交互（但保留打開/返回按鈕）
+                document.querySelectorAll('[data-editable="true"]').forEach(el => {
+                    el.removeAttribute('data-editable');
+                    el.removeAttribute('tabindex');
+                    el.style.cursor = 'default';
+                    el.style.pointerEvents = 'none';
+                });
+
+                // 禁用拖拽功能
+                document.querySelectorAll('.photo-frame').forEach(frame => {
+                    frame.removeAttribute('draggable');
+                });
+
+                // 添加只讀樣式
+                const style = document.createElement('style');
+                style.textContent = `
+                    .photo-frame .photo-caption {
+                        transform: translateY(0) !important;
+                        opacity: 0.8;
+                    }
+                    .photo-frame, .title, .subtitle, .message, .timeline-date, .timeline-content {
+                        pointer-events: none;
+                        user-select: none;
+                    }
+                    .open-button, .close-button {
+                        pointer-events: auto !important;
+                        user-select: auto !important;
+                        cursor: pointer !important;
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // 讓分享模式下愛心更多
+                MAX_HEARTS = 30;
+                initHearts();
+            }
+
+            // 顯示分享對話框
+            async function showShareDialog(viewUrl) {
+                try {
+                    const dialogOverlay = document.createElement('div');
+                    dialogOverlay.className = 'share-dialog-overlay';
+
+                    const dialog = document.createElement('div');
+                    dialog.className = 'share-dialog';
+                    
+                    // 先保存卡片數據
+                    const cardId = await saveCardToServer();
+                    if (!cardId) {
+                        throw new Error('保存卡片失敗');
+                    }
+
+                    const shareUrl = `${viewUrl}&card=${cardId}`;
+                    
+                    dialog.innerHTML = `
+                        <h3 style="margin: 0 0 20px 0; color: #5e35b1; font-size: 1.5rem; text-align: center;">分享你的生日賀卡</h3>
+                        <p style="margin-bottom: 15px;">複製以下連結或生成 QR 碼來分享你的賀卡：</p>
+                        <div style="display: flex; margin-bottom: 20px;">
+                            <input type="text" id="share-url" value="${shareUrl}" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-right: 10px;" readonly>
+                            <button id="copy-url-btn" style="padding: 10px 15px; background: #7e57c2; color: white; border: none; border-radius: 5px; cursor: pointer;">複製</button>
+                        </div>
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <button id="generate-qr-btn" style="padding: 10px 20px; background: #5e35b1; color: white; border: none; border-radius: 5px; cursor: pointer;">生成 QR 碼</button>
+                        </div>
+                        <div id="qrcode-container" style="text-align: center; margin: 20px 0; display: none;"></div>
+                        <div style="text-align: center;">
+                            <button id="close-dialog-btn" style="padding: 10px 20px; background: #f5f5f5; color: #333; border: none; border-radius: 5px; cursor: pointer;">關閉</button>
+                        </div>
+                    `;
+
+                    dialogOverlay.appendChild(dialog);
+                    document.body.appendChild(dialogOverlay);
+
+                    // 複製連結功能
+                    const copyBtn = document.getElementById('copy-url-btn');
+                    const urlInput = document.getElementById('share-url');
+                    
+                    copyBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        urlInput.select();
+                        document.execCommand('copy');
+                        
+                        this.textContent = '已複製!';
+                        setTimeout(() => {
+                            this.textContent = '複製';
+                        }, 2000);
+                    });
+
+                    // 生成 QR 碼功能
+                    document.getElementById('generate-qr-btn').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const qrcodeContainer = document.getElementById('qrcode-container');
+                        qrcodeContainer.style.display = 'block';
+                        
+                        const qrCodeUrl = `https://chart.googleapis.com/chart?cht=qr&chl=${encodeURIComponent(shareUrl)}&chs=250x250&choe=UTF-8`;
+                        qrcodeContainer.innerHTML = `
+                            <img src="${qrCodeUrl}" alt="QR Code">
+                            <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">用手機掃描此 QR 碼即可查看</p>
+                            <button id="download-qr-btn" style="margin-top: 10px; padding: 8px 15px; background: #7e57c2; color: white; border: none; border-radius: 5px; cursor: pointer;">下載 QR 碼</button>
+                        `;
+                        
+                        document.getElementById('download-qr-btn').addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const link = document.createElement('a');
+                            link.href = qrCodeUrl;
+                            link.download = '生日賀卡_QR碼.png';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        });
+                    });
+
+                    // 關閉對話框功能
+                    document.getElementById('close-dialog-btn').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        document.body.removeChild(dialogOverlay);
+                    });
+
+                    dialogOverlay.addEventListener('click', function(e) {
+                        if (e.target === dialogOverlay) {
+                            document.body.removeChild(dialogOverlay);
+                        }
+                    });
+                } catch (error) {
+                    console.error('顯示分享對話框失敗:', error);
+                    alert('分享失敗，請稍後重試！');
+                }
+            }
+
+            // 添加保存卡片到服務器的功能
+            async function saveCardToServer() {
+                try {
+                    const cardData = {
+                        title: document.querySelector('[data-type="title"]')?.innerHTML || "",
+                        subtitle: document.querySelector('[data-type="subtitle"]')?.innerHTML || "",
+                        backTitle: document.querySelector('[data-type="back-title"]')?.innerHTML || "",
+                        message: document.querySelector('[data-type="message"]')?.innerHTML || "",
+                        travelTitle: document.querySelector('[data-type="travel-title"]')?.innerHTML || "",
+                        travelContent: document.querySelector('[data-type="travel-content"]')?.innerHTML || "",
+                        movieTitle: document.querySelector('[data-type="movie-title"]')?.innerHTML || "",
+                        movieContent: document.querySelector('[data-type="movie-content"]')?.innerHTML || "",
+                        foodTitle: document.querySelector('[data-type="food-title"]')?.innerHTML || "",
+                        foodContent: document.querySelector('[data-type="food-content"]')?.innerHTML || "",
+                        exhibitionTitle: document.querySelector('[data-type="exhibition-title"]')?.innerHTML || "",
+                        exhibitionContent: document.querySelector('[data-type="exhibition-content"]')?.innerHTML || "",
+                        photos: []
+                    };
+
+                    // 收集所有照片數據
+                    document.querySelectorAll('.photo-frame').forEach(frame => {
+                        const photoData = {
+                            id: frame.getAttribute('data-id')
+                        };
+                        const realPhoto = frame.querySelector('.photo-real');
+                        const placeholderPhoto = frame.querySelector('.photo-placeholder');
+                        const photoCaption = frame.querySelector('.photo-caption');
+
+                        if (realPhoto) {
+                            photoData.type = 'real';
+                            photoData.src = realPhoto.src;
+                        } else if (placeholderPhoto) {
+                            photoData.type = 'placeholder';
+                            photoData.title = placeholderPhoto.querySelector('p')?.textContent || "";
+                            photoData.background = placeholderPhoto.style.background || "";
+                        }
+                        if (photoCaption) {
+                            photoData.caption = photoCaption.innerHTML;
+                        }
+                        cardData.photos.push(photoData);
+                    });
+
+                    const response = await fetch(`${API_BASE_URL}/api/save_card`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(cardData)
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showSaveStatus('saved');
+                        return result.card_id;
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    console.error('保存失敗:', error);
+                    alert('保存失敗，請稍後重試！');
+                    return null;
+                }
+            }
+
+            // 修改檢視模式載入邏輯
+            async function loadCardFromServer(cardId) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/load_card/${cardId}`);
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        return result.data;
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    console.error('載入失敗:', error);
+                    alert('載入失敗，請確認連結是否正確！');
+                    return null;
+                }
+            }
+
+            // 在程式最後，如果有卡片資料就載入
+            loadCardData();
+        });
+    </script>
+</body>
+</html>
