@@ -13,12 +13,10 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__, static_url_path='')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 設定最大上傳檔案大小為 16MB
 CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "http://localhost:5000",
-            "https://nickleo9.github.io",
-            "https://aicard-frontend.onrender.com"
-        ]
+    r"/*": {
+        "origins": ["https://nickleo9.github.io", "http://localhost:5000"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
     }
 })
 
@@ -53,8 +51,10 @@ def root():
 def serve_card():
     return send_file('card.html')
 
-@app.route('/api/save_card', methods=['POST'])
+@app.route('/api/save_card', methods=['POST', 'OPTIONS'])
 def save_card():
+    if request.method == 'OPTIONS':
+        return '', 204
     try:
         data = request.get_json()
         card_id = str(uuid.uuid4())
@@ -93,7 +93,10 @@ def get_card(card_id):
         with open(card_data_path, 'r', encoding='utf-8') as f:
             card_data = json.load(f)
             
-        return jsonify(card_data)
+        return jsonify({
+            'success': True,
+            'data': card_data
+        })
     except Exception as e:
         app.logger.error(f'讀取卡片時發生錯誤: {str(e)}')
         return jsonify({
@@ -219,8 +222,8 @@ def get_music(filename):
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
 if __name__ == '__main__':
